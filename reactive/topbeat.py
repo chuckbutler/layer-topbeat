@@ -48,8 +48,12 @@ def enlist_topbeat():
     set_state('topbeat.autostarted')
 
 
+@when('topbeat.installed')
 @when('elasticsearch.available')
 @when_not('topbeat.index.pushed')
-def push_topbeat_index():
-    push_beat_index('topbeat')
+def push_topbeat_index(elasticsearch):
+    hosts = elasticsearch.list_unit_data()
+    for host in hosts:
+        host_string = "{}:{}".format(host['host'], host['port'])
+    push_beat_index(host_string, 'topbeat')
     set_state('topbeat.index.pushed')
